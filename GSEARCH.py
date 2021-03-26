@@ -35,7 +35,12 @@ def set_UA_headers_and_send_request(link, session):
 	response = session.get(link, headers=headers)#, proxies=proxies)
 	return response
 
-
+def error_429_handle():
+	time.sleep(120)
+	session.cookies.clear()
+	session.exit()
+	session = HTMLSession()
+	return session
 	
 def scrape(response, google_search_urls, each_link, index_num):	
 	urls = response.html.xpath('//div[@class="yuRUbf"]/a/@href')
