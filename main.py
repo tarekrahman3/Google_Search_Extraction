@@ -11,3 +11,13 @@ for each_link in range(3, 22):
 	GSEARCH.sleep()
 GSEARCH.create_dataframe()
 GSEARCH.export_to_csv(df)
+
+def error_429_handle(response):
+	if response.status_code = 429:
+		time.sleep(120)
+		session.cookies.clear()
+		session.exit()
+		session = HTMLSession()
+	else:
+		pass
+	return session
