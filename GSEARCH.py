@@ -1,6 +1,4 @@
 from requests_html import HTMLSession
-import requests
-from bs4 import BeautifulSoup
 from lxml import html
 import pandas as pd
 import random
