@@ -13,6 +13,6 @@ for each_link in range(3, 22):
 		pass
 	GSEARCH.scrape(response, google_search_urls, each_link, index_num)
 	GSEARCH.sleep()
-GSEARCH.create_dataframe()
+df = GSEARCH.create_dataframe()
 GSEARCH.export_to_csv(df)
 
