@@ -11,6 +11,7 @@ for each_link in range(3, 22):
 		response = GSEARCH.error_429_handle()
 	else:
 		pass
+	GSEARCH.test_no_result(response)
 	GSEARCH.scrape(response, google_search_urls, each_link, index_num)
 	GSEARCH.sleep()
 df = GSEARCH.create_dataframe()
