@@ -18,7 +18,16 @@ col4 = []
 col5 = []
 col6 = []
 
-
+def test_no_result():
+		try:
+			test = response.html.xpath("//div[@class='card-section']/p").text
+			import re
+			if re.match('(?:did not match any documents)'):
+				print('no result')
+		except:
+			pass
+		
+		
 def load_import_csv():
 	df = pd.read_csv('imports.csv', header=0)
 	google_search_urls = df.links.to_list()
