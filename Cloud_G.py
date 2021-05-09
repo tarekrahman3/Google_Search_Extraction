@@ -1,18 +1,20 @@
-csv_import_file = input(':')
-csv_import_file = 'import1.csv'
-	
 from requests_html import HTMLSession
 from lxml import html
 import random
 import time
 import csv
 import os
+import urllib.parse as Encodeurl
+
+csv_import_file = 'import.csv'
+
+try:
+	temp = f'Temp {time.ctime()}'
+	os.system( f"mkdir '{temp}'")
+except:
+	pass
 
 def dict_csv_read(csv_import_file):
-	try:
-		os.system('mkdir "Response Archive"')
-	except:
-		pass
 	rows_dict = []
 	with open(csv_import_file) as csv_file:
 		reader = csv.DictReader(csv_file)
@@ -32,7 +34,7 @@ def send_get_request(each_keyword_link, Index_No):
 	USER_AGENT = A[random.randrange(len(A))]
 	headers = {"user-agent" : USER_AGENT}
 	response = session.get(each_keyword_link, headers=headers)
-	with open(f"./Response Archive/{Index_No} - {str(index+1)} - response.txt", "w") as f:
+	with open(f"./{temp}/{Index_No} - {time.ctime()} - response.txt", "w") as f:
 			f.write(response.text)
 	session.close()
 	return response
@@ -43,38 +45,53 @@ def error_429_handle():
 	start_request_session()
 	
 def recommended_result_parse(response):
-	name = response.html.xpath('//h3[1]/text()')[0]
-	address = response.html.xpath('//span[@class="BNeawe tAd8D AP7Wnd"]/text()')
-	website = response.html.xpath('//a[contains(@href,"geocode=")]//following-sibling::a/@href')
-	check_operating_status = response.html.xpath('//*[contains(text(), "Permanently closed")]/text()')
-	map_source = response.html.xpath('//a[contains(@href,"&geocode=")]/@href')
-	info_dict = {'name':name, 'address':address, 'website':website, 'map_source': map_source, 'operatng staus':check_operating_status}
+	try:
+		name = response.html.xpath('//h3[1]/text()')[0]
+		address = response.html.xpath('//span[@class="BNeawe tAd8D AP7Wnd"]/text()')
+		website = response.html.xpath('//a[contains(@href,"geocode=")]//following-sibling::a/@href')
+		check_operating_status = response.html.xpath('//*[contains(text(), "Permanently closed")]/text()')
+		map_source = response.html.xpath('//a[contains(@href,"&geocode=")]/@href')
+		info_dict = {'name':name, 'address':address, 'website':website, 'map_source': map_source, 'operatng staus':check_operating_status}
+	except:
+		info_dict = {'name':'', 'address':'', 'website':'', 'map_source': '', 'operatng staus':''}
 	return info_dict
-	
+
+def generate_column_names():
+	a = []
+	i = 0
+	while i <10: 
+		st = f"Search Result {i} Header"
+		st2 = f"Search Result {i} URL"
+		a.append(st)
+		a.append(st2)
+		i = i+1
+	return a
+columns = generate_column_names()
+
+
 def parse_list_result(response):
 	l={}
 	try:
 		header = response.html.xpath('//div[@class="yuRUbf"]/a/h3/text()')
 		href = response.html.xpath('//div[@class="yuRUbf"]/a/@href')
-		header_index = 1
-		
+		header_index = 0
+		i=0
 		for header_index in range(len(header)):
-			header_column_name = f"Search Result {header_index} Header" 
-			header_column_content = header[header_index-1]
-			url_column_name = f"Search Result {header_index} URL"
-			url_column_content = href[header_index-1]
+			header_column_name = columns[i]
+			header_column_content = header[i]
+			url_column_name =columns[i+1]
+			url_column_content = href[i]
 			a = {header_column_name:header_column_content,
 			url_column_name:url_column_content}
 			l.update(a)
+			i=i+1
 	except:
-		header_column_name = f"Search Result 0 Header" 
-		url_column_name = f"Search Result 0 URL"
-		a = {header_column_name:'',
-			url_column_name:''}
+		a = {header_column_name:columns[i],
+			url_column_name:columns[i+1]}
 		l.update(a)
 	return l
 def write_csv(dict_array):
-	fields = list(dict_array[0].keys())
+	fields = ['Index No.', 'keywords'] + ['name', 'address', 'website', 'map_source', 'operatng staus'] + columns
 	with open(f"Cloud G export at {time.ctime()}.csv", 'w') as csvfile: 
 		writer = csv.DictWriter(csvfile, fieldnames = fields)
 		writer.writeheader()
@@ -83,13 +100,15 @@ def write_csv(dict_array):
 if __name__ == "__main__":
 	dict_array = []
 	csv_rows = dict_csv_read(csv_import_file) 
-	index = 0
-	for index in range(len(csv_rows)):
+	const = 'https://www.google.com/search?hl=en&q='
+	e = 0
+	for e in range(len(csv_rows)):
 		info_dict = {
-		'Index No.': csv_rows[index]['Index No.'],
-		'generated link': csv_rows[index]['generated_keyword_urls']}
-		time.sleep(random.randint(3, 6))
-		response = send_get_request(csv_rows[index]['generated_keyword_urls'], csv_rows[index]['Index No.'])
+		'Index No.': csv_rows[e]['Index No.'],
+		'keywords': csv_rows[e]['keywords']}
+		url = const + Encodeurl.quote(csv_rows[e]['keywords'])
+		response = send_get_request(url, csv_rows[e]['Index No.'])
+		time.sleep(15)
 		#response.html.render()
 		# Parse the featured result if available
 		try:
@@ -101,14 +120,3 @@ if __name__ == "__main__":
 		print(info_dict)
 		dict_array.append(info_dict)
 	write_csv(dict_array)
-
-
-
-
-
-
-
-
-
-
-			
