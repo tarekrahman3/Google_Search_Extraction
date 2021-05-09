@@ -22,6 +22,30 @@ def dict_csv_read(csv_import_file):
 			rows_dict.append(row)
 	return rows_dict
 
+if __name__ == "__main__":
+	dict_array = []
+	csv_rows = dict_csv_read(csv_import_file) 
+	const = 'https://www.google.com/search?hl=en&q='
+	e = 0
+	for e in range(len(csv_rows)):
+		info_dict = {
+		'Index No.': csv_rows[e]['Index No.'],
+		'keywords': csv_rows[e]['keywords']}
+		url = const + Encodeurl.quote(csv_rows[e]['keywords'])
+		response = send_get_request(url, csv_rows[e]['Index No.'])
+		time.sleep(15)
+		#response.html.render()
+		# Parse the featured result if available
+		try:
+			recommended_result = recommended_result_parse(response)
+			list_result = parse_list_result(response)
+		finally:
+			info_dict.update(recommended_result)
+			info_dict.update(list_result)
+		print(info_dict)
+		dict_array.append(info_dict)
+	write_csv(dict_array)
+
 def send_get_request(each_keyword_link, Index_No):
 	A = (
 	"Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.90 Safari/537.36",
@@ -97,26 +121,3 @@ def write_csv(dict_array):
 		writer.writeheader()
 		writer.writerows(dict_array)
 
-if __name__ == "__main__":
-	dict_array = []
-	csv_rows = dict_csv_read(csv_import_file) 
-	const = 'https://www.google.com/search?hl=en&q='
-	e = 0
-	for e in range(len(csv_rows)):
-		info_dict = {
-		'Index No.': csv_rows[e]['Index No.'],
-		'keywords': csv_rows[e]['keywords']}
-		url = const + Encodeurl.quote(csv_rows[e]['keywords'])
-		response = send_get_request(url, csv_rows[e]['Index No.'])
-		time.sleep(15)
-		#response.html.render()
-		# Parse the featured result if available
-		try:
-			recommended_result = recommended_result_parse(response)
-			list_result = parse_list_result(response)
-		finally:
-			info_dict.update(recommended_result)
-			info_dict.update(list_result)
-		print(info_dict)
-		dict_array.append(info_dict)
-	write_csv(dict_array)
