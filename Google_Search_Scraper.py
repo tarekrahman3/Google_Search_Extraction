@@ -59,21 +59,21 @@ def social_accounts(driver):
 		return None
 
 
-def first_search_result(driver):
+def search_result(driver,index):
 	results = driver.find_elements(By.XPATH, '//div[@class]/div[@class="g"]')
 	try:
-		first_result_title = results[0].find_element_by_xpath('.//h3').text
+		result_title = results[index].find_element_by_xpath('.//h3').text
 	except:
-		first_result_title = None
+		result_title = None
 	try:
-		first_result_description = results[0].find_element_by_xpath('.//*[@style="-webkit-line-clamp:2"]').text
+		result_description = results[index].find_element_by_xpath('.//*[@style="-webkit-line-clamp:2"]').text
 	except:
-		first_result_description = None
+		result_description = None
 	try:
-		first_result_url = results[0].find_element_by_xpath('.//a[@href and @data-ved]').get_attribute('href')
+		result_url = results[index].find_element_by_xpath('.//a[@href and @data-ved]').get_attribute('href')
 	except:
-		first_result_url = None
-	return first_result_title, first_result_description, first_result_url
+		result_url = None
+	return result_title, result_description, result_url
 
 def scrape(url, index, dict_array):
 	driver.get(url+'&hl=en')
@@ -83,7 +83,16 @@ def scrape(url, index, dict_array):
 		play_obj.wait_done()
 		input("Press any key to continue")
 	permanently_closed, name, address, phone, website = complimentary_result(driver)
-	first_result_title, first_result_description, first_result_url = first_search_result(driver)
+	first_result_title, first_result_description, first_result_url = search_result(driver,0)
+	second_result_title, second_result_description, second_result_url = search_result(driver,1)
+	third_result_title, third_result_description, third_result_url = search_result(driver,2)
+	fourth_result_title, fourth_result_description, fourth_result_url = search_result(driver,3)
+	fifth_result_title, fifth_result_description, fifth_result_url = search_result(driver,4)
+	sixth_result_title, sixth_result_description, sixth_result_url = search_result(driver,5)
+	seventh_result_title, seventh_result_description, seventh_result_url = search_result(driver,6)
+	eighth_result_title, eighth_result_description, eighth_result_url = search_result(driver,7)
+	ningth_result_title, ningth_result_description, ningth_result_url = search_result(driver,8)
+	tenth_result_title, tenth_result_description, tenth_result_url = search_result(driver,9)
 	socials = social_accounts(driver)
 	data = {
 		'source':url,
@@ -93,9 +102,36 @@ def scrape(url, index, dict_array):
 		'complimentary_result_phone':phone,
 		'permanently_closed':permanently_closed,
 		'socials':socials,
-		'1st_result_title': first_result_title,
-		'1st_result_description': first_result_description,
-		'1st_result_url': first_result_url
+		'first_result_title': first_result_title,
+		'first_result_description': first_result_description,
+		'first_result_url': first_result_url,
+		'second_result_title': second_result_title,
+		'second_result_description': second_result_description,
+		'second_result_url': second_result_url,
+		'third_result_title': third_result_title,
+		'third_result_description': third_result_description,
+		'third_result_url': third_result_url,
+		'fourth_result_title': fourth_result_title,
+		'fourth_result_description': fourth_result_description,
+		'fourth_result_url': fourth_result_url,
+		'fifth_result_title': fifth_result_title,
+		'fifth_result_description': fifth_result_description,
+		'fifth_result_url': fifth_result_url,
+		'sixth_result_title': sixth_result_title,
+		'sixth_result_description': sixth_result_description,
+		'sixth_result_url': sixth_result_url,
+		'seventh_result_title': seventh_result_title,
+		'seventh_result_description': seventh_result_description,
+		'seventh_result_url': seventh_result_url,
+		'eighth_result_title': eighth_result_title,
+		'eighth_result_description': eighth_result_description,
+		'eighth_result_url': eighth_result_url,
+		'ningth_result_title': ningth_result_title,
+		'ningth_result_description': ningth_result_description,
+		'ningth_result_url': ningth_result_url,
+		'tenth_result_title': tenth_result_title,
+		'tenth_result_description': tenth_result_description,
+		'tenth_result_url': tenth_result_url
 		}
 	print(f"{index} | {data['complimentary_result_name']} | {data['complimentary_result_website']} | {data['complimentary_result_phone']} | {data['socials']}")
 	dict_array.append(data)
