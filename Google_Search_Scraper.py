@@ -15,7 +15,7 @@ def dict_csv_read():
 def scrape(url, index, dict_array):
 	driver.get(url+'&hl=en')
 	time.sleep(2)
-	if "robot" in (driver.page_source):
+	if "captcha" in (driver.page_source):
 		play_obj = wave_obj.play()
 		play_obj.wait_done()
 		input("Press any key to continue")
@@ -94,7 +94,7 @@ google_search_urls = dict_csv_read()
 dict_array = []
 try:
 	for index, url in enumerate(google_search_urls):
-			time.sleep(5)
+			time.sleep(1)
 			scrape(url, index, dict_array)#scrape_1st_result()
 finally:
 	pd.DataFrame(dict_array).to_csv('export.csv', index = False)
