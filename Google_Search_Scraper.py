@@ -2,6 +2,7 @@ import undetected_chromedriver.v2 as uc
 import time
 import simpleaudio
 from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.common.by import By
 import pandas as pd
 
 wave_obj = simpleaudio.WaveObject.from_wave_file("bell.wav")
