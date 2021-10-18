@@ -5,20 +5,12 @@ from selenium.webdriver.common.keys import Keys
 import pandas as pd
 
 wave_obj = simpleaudio.WaveObject.from_wave_file("bell.wav")
-
-
 driver = uc.Chrome()
 
 def dict_csv_read():
 	return pd.read_csv('imports.csv').links.tolist()
 
-def scrape(url, index, dict_array):
-	driver.get(url+'&hl=en')
-	time.sleep(2)
-	if "captcha" in (driver.page_source):
-		play_obj = wave_obj.play()
-		play_obj.wait_done()
-		input("Press any key to continue")
+def complimentary_result(driver):
 	try:
 		permanently_closed = driver.find_element_by_xpath('//h2[text()="Complementary results" or text()="Complementary Results"]/following-sibling::div//span[text()="Permanently closed"]').text
 	except:
@@ -39,18 +31,9 @@ def scrape(url, index, dict_array):
 		phone =  driver.find_element_by_xpath('//h2[text()="Complementary results" or text()="Complementary Results"]/following-sibling::div//span[contains(@aria-label,"Call")]').text
 	except:
 		phone =  None
-	try:
-		title = driver.find_element_by_xpath('//h3').text
-	except:
-		title = None
-	try:
-		description = driver.find_element_by_xpath('//h3/ancestor::div/following-sibling::div[2]').text
-	except:
-		description = None
-	try:
-		first_result_url = driver.find_element_by_xpath('//h3/ancestor::a').get_attribute('href')
-	except:
-		first_result_url = None
+	return permanently_closed, name, address, phone
+
+def social_accounts(driver):
 	try:
 		social_profiles =  driver.find_element_by_xpath('//h2[text()="Complementary results" or text()="Complementary Results"]/following-sibling::div//*[text()="Profiles"]/following::div[1]')
 		try:
@@ -69,24 +52,49 @@ def scrape(url, index, dict_array):
 			linkedin = social_profiles.find_element_by_xpath('.//a[contains(@href,"linkedin.com/")]').get_attribute('href')
 		except:
 			linkedin = None
-		socials = f"""
-			facebook: {facebook}
-			instagram: {instagram}
-			twitter: {twitter}
-			linkedin: {linkedin}"""
+		socials = f"""facebook: {facebook}\ninstagram: {instagram}\ntwitter: {twitter}\nlinkedin: {linkedin}"""
+		return socials
 	except:
-		socials = None
-	data = {'source':url,
-	'name':name,
-	'address':address,
-	'website':website,
-	'phone':phone,
-	'permanently_closed':permanently_closed,
-	'socials':socials,
-	'1st_result_title': title,
-	'1st_result_description': description,
-	'1st_result_url': first_result_url
-	}
+		return None
+
+
+def first_search_result(driver):
+	try:
+		first_result_title = driver.find_element_by_xpath('//h3').text
+	except:
+		first_result_title = None
+	try:
+		first_result_description = driver.find_element_by_xpath('//h3/ancestor::div/following-sibling::div[2]').text
+	except:
+		first_result_description = None
+	try:
+		first_result_url = driver.find_element_by_xpath('//h3/ancestor::a').get_attribute('href')
+	except:
+		first_result_url = None
+	return first_result_title, first_result_description, first_result_url
+
+def scrape(url, index, dict_array):
+	driver.get(url+'&hl=en')
+	time.sleep(2)
+	if "captcha" in (driver.page_source):
+		play_obj = wave_obj.play()
+		play_obj.wait_done()
+		input("Press any key to continue")
+	permanently_closed, name, address, phone = complimentary_result(driver)
+	first_result_title, first_result_description, first_result_url = first_search_result(driver)
+	socials = social_accounts(driver)
+	data = {
+		'source':url,
+		'complimentary_result_name':name,
+		'complimentary_result_address':address,
+		'complimentary_result_website':website,
+		'complimentary_result_phone':phone,
+		'permanently_closed':permanently_closed,
+		'socials':socials,
+		'1st_result_title': first_result_title,
+		'1st_result_description': first_result_description,
+		'1st_result_url': first_result_url
+		}
 	print(f"{index} | {data['name']} | {data['website']} | {data['phone']} | {data['socials']}")
 	dict_array.append(data)
 
@@ -95,7 +103,9 @@ dict_array = []
 try:
 	for index, url in enumerate(google_search_urls):
 			time.sleep(1)
-			scrape(url, index, dict_array)#scrape_1st_result()
+			scrape(url, index, dict_array)
+except Exception as e:
+	print(e)
 finally:
 	pd.DataFrame(dict_array).to_csv('export.csv', index = False)
 driver.quit()
