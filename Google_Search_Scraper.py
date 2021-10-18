@@ -15,7 +15,7 @@ def dict_csv_read():
 def scrape(url, index, dict_array):
 	driver.get(url+'&hl=en')
 	time.sleep(2)
-	if "robot" in (driver.page_source):
+	if "captcha" in (driver.page_source):
 		play_obj = wave_obj.play()
 		play_obj.wait_done()
 		input("Press any key to continue")
