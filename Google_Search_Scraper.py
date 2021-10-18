@@ -59,16 +59,17 @@ def social_accounts(driver):
 
 
 def first_search_result(driver):
+	results = driver.find_elements(By.XPATH, '//div[@class]/div[@class="g"]')
 	try:
-		first_result_title = driver.find_element_by_xpath('//h3').text
+		first_result_title = results[0].find_element_by_xpath('.//h3').text
 	except:
 		first_result_title = None
 	try:
-		first_result_description = driver.find_element_by_xpath('//h3/ancestor::div/following-sibling::div[2]').text
+		first_result_description = results[0].find_element_by_xpath('.//*[@style="-webkit-line-clamp:2"]').text
 	except:
 		first_result_description = None
 	try:
-		first_result_url = driver.find_element_by_xpath('//h3/ancestor::a').get_attribute('href')
+		first_result_url = results[0].find_element_by_xpath('.//a[@href and @data-ved]').get_attribute('href')
 	except:
 		first_result_url = None
 	return first_result_title, first_result_description, first_result_url
