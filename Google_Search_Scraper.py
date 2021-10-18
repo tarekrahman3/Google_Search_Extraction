@@ -31,7 +31,7 @@ def complimentary_result(driver):
 		phone =  driver.find_element_by_xpath('//h2[text()="Complementary results" or text()="Complementary Results"]/following-sibling::div//span[contains(@aria-label,"Call")]').text
 	except:
 		phone =  None
-	return permanently_closed, name, address, phone
+	return permanently_closed, name, address, phone, website
 
 def social_accounts(driver):
 	try:
@@ -80,7 +80,7 @@ def scrape(url, index, dict_array):
 		play_obj = wave_obj.play()
 		play_obj.wait_done()
 		input("Press any key to continue")
-	permanently_closed, name, address, phone = complimentary_result(driver)
+	permanently_closed, name, address, phone, website = complimentary_result(driver)
 	first_result_title, first_result_description, first_result_url = first_search_result(driver)
 	socials = social_accounts(driver)
 	data = {
@@ -95,7 +95,7 @@ def scrape(url, index, dict_array):
 		'1st_result_description': first_result_description,
 		'1st_result_url': first_result_url
 		}
-	print(f"{index} | {data['name']} | {data['website']} | {data['phone']} | {data['socials']}")
+	print(f"{index} | {data['complimentary_result_name']} | {data['complimentary_result_website']} | {data['complimentary_result_phone']} | {data['socials']}")
 	dict_array.append(data)
 
 google_search_urls = dict_csv_read()
