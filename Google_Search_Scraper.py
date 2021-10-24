@@ -5,7 +5,11 @@ from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.by import By
 import pandas as pd
 
-wave_obj = simpleaudio.WaveObject.from_wave_file("bell.wav")
+def notify():
+	wave_obj = simpleaudio.WaveObject.from_wave_file("bell.wav")
+	play_obj = wave_obj.play()
+	play_obj.wait_done()
+
 driver = uc.Chrome()
 
 def dict_csv_read():
@@ -76,12 +80,19 @@ def search_result(driver,index):
 	return result_title, result_description, result_url
 
 def scrape(url, index, dict_array):
+	if index%50==0:
+		pd.DataFrame(dict_array).to_csv('backup_au_school.csv', index = False)
 	driver.get(url+'&hl=en')
 	time.sleep(2)
 	if "captcha" in (driver.page_source):
-		play_obj = wave_obj.play()
-		play_obj.wait_done()
-		input("Press any key to continue")
+		notify()
+		epoch = time.perf_counter()
+		while True:
+			if not "captcha" in (driver.page_source):
+				break
+			if int(epoch)>30 and (int(time.perf_counter()) - int(epoch))%30==0:
+				notify()
+	
 	permanently_closed, name, address, phone, website = complimentary_result(driver)
 	first_result_title, first_result_description, first_result_url = search_result(driver,0)
 	second_result_title, second_result_description, second_result_url = search_result(driver,1)
