@@ -4,6 +4,7 @@ import simpleaudio
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.by import By
 import pandas as pd
+import urllib.parse
 
 def notify():
 	wave_obj = simpleaudio.WaveObject.from_wave_file("bell.wav")
@@ -150,8 +151,9 @@ def scrape(url, index, dict_array):
 google_search_urls = dict_csv_read()
 dict_array = []
 try:
-	for index, url in enumerate(google_search_urls):
+	for index, search_string in enumerate(google_search_urls):
 			time.sleep(1)
+			url = 'https://www.google.com/search?q='+urllib.parse.quote(search_string)
 			scrape(url, index, dict_array)
 except Exception as e:
 	print(e)
