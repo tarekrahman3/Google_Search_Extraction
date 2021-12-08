@@ -27,7 +27,7 @@ def complimentary_result(driver):
 	except:
 		name = None
 	try:
-		orgtype  = driver.find_element(By.XPATH'//*[@data-attrid="subtitle"]/span').text
+		orgtype  = driver.find_element(By.XPATH,'//*[@data-attrid="subtitle"]/span').text
 	except:
 		orgtype  =  None
 	try:
@@ -68,11 +68,6 @@ def social_accounts(driver):
 	except:
 		return None
 
-def getOrganizationType(driver):
-	try:
-		return driver.find_element(By.XPATH'//*[@data-attrid="subtitle"]/span').text
-	except:
-		return None
 
 def search_result(driver,index):
 	results = driver.find_elements(By.XPATH, '//div[@class]/div[@class="g"]')
@@ -164,8 +159,8 @@ dict_array = []
 try:
 	for index, search_string in enumerate(google_search_urls):
 			time.sleep(1)
-			#url = 'https://www.google.com/search?q='+urllib.parse.quote(search_string)
-			scrape(search_string, index, dict_array)
+			url = 'https://www.google.com/search?q='+urllib.parse.quote(search_string)
+			scrape(url, index, dict_array)
 except Exception as e:
 	print(e)
 finally:
