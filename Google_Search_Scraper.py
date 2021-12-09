@@ -91,12 +91,12 @@ def search_result(driver,index):
 
 def scrape(url, index, dict_array):
 	if index%50==0:
-		pd.DataFrame(dict_array).to_csv('backup_au_school.csv', index = False)
+		pd.DataFrame(dict_array).to_csv('tempBackup.csv', index = False)
 	driver.get(url+'&hl=en')
 	time.sleep(1)
 	if "captcha" in (driver.page_source):
 		print('captcha !!!')
-		pd.DataFrame(dict_array).to_csv('backup_au_school.csv', index = False)
+		pd.DataFrame(dict_array).to_csv('tempBackup.csv', index = False)
 		notify()
 		epoch = time.perf_counter()
 		while True:
@@ -169,7 +169,8 @@ try:
 			url = 'https://www.google.com/search?q='+urllib.parse.quote(search_string)
 			scrape(url, index, dict_array)
 except Exception as e:
+	pd.DataFrame(dict_array).to_csv('error exit backup.csv', index = False)
 	pprint(e)
 finally:
 	pd.DataFrame(dict_array).to_csv('export.csv', index = False)
-driver.quit()
+driver.close()
