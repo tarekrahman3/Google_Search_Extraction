@@ -93,8 +93,10 @@ def scrape(url, index, dict_array):
 	if index%50==0:
 		pd.DataFrame(dict_array).to_csv('backup_au_school.csv', index = False)
 	driver.get(url+'&hl=en')
-	time.sleep(2)
+	time.sleep(1)
 	if "captcha" in (driver.page_source):
+		print('captcha !!!')
+		pd.DataFrame(dict_array).to_csv('backup_au_school.csv', index = False)
 		notify()
 		epoch = time.perf_counter()
 		while True:
@@ -156,7 +158,7 @@ def scrape(url, index, dict_array):
 		'tenth_result_description': tenth_result_description,
 		'tenth_result_url': tenth_result_url
 		}
-	print(f"{index} | {data['complimentary_result_name']} | {data['complimentary_result_website']} | {data['complimentary_result_assumedorgtype']} | {data['complimentary_result_realorgType']}")
+	print(f"{index} | {data['first_result_title']} | {data['complimentary_result_website']} | {data['complimentary_result_assumedorgtype']} | {data['complimentary_result_realorgType']}")
 	dict_array.append(data)
 
 google_search_urls = dict_csv_read()
