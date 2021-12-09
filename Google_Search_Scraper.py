@@ -27,9 +27,13 @@ def complimentary_result(driver):
 	except:
 		name = None
 	try:
-		orgtype  = driver.find_element(By.XPATH,'//*[@data-attrid="subtitle"]/span').text
+		realorgtype  = driver.find_element(By.XPATH,'//h2[text()="Complementary results" or text()="Complementary Results"]/following-sibling::div//*[@data-attrid="subtitle"]/span').text
 	except:
-		orgtype  =  None
+		realorgtype  =  None
+	try:
+		assumedorgtype=  driver.find_element(By.XPATH,'//h2[text()="Complementary results" or text()="Complementary Results"]/following-sibling::div//*[@data-attrid="kc:/local:one line summary"]//span[contains(text(),"organization")]').text
+	except:
+		assumedorgtype =  None
 	try:
 		address = driver.find_element_by_xpath('//h2[text()="Complementary results" or text()="Complementary Results"]/following-sibling::div//a[text()="Address"]/../following-sibling::span').text
 	except:
@@ -42,7 +46,7 @@ def complimentary_result(driver):
 		phone =  driver.find_element_by_xpath('//h2[text()="Complementary results" or text()="Complementary Results"]/following-sibling::div//span[contains(@aria-label,"Call")]').text
 	except:
 		phone =  None
-	return permanently_closed, name,orgtype, address, phone, website
+	return permanently_closed, name,realorgtype,assumedorgtype, address, phone, website
 
 def social_accounts(driver):
 	try:
@@ -99,7 +103,7 @@ def scrape(url, index, dict_array):
 			if int(epoch)>30 and (int(time.perf_counter()) - int(epoch))%30==0:
 				notify()
 	
-	permanently_closed, name, orgtype, address, phone, website = complimentary_result(driver)
+	permanently_closed, name, realorgtype, assumedorgtype,address, phone, website = complimentary_result(driver)
 	first_result_title, first_result_description, first_result_url = search_result(driver,0)
 	second_result_title, second_result_description, second_result_url = search_result(driver,1)
 	third_result_title, third_result_description, third_result_url = search_result(driver,2)
@@ -114,7 +118,8 @@ def scrape(url, index, dict_array):
 	data = {
 		'source':url,
 		'complimentary_result_name':name,
-		'complimentary_result_orgType':orgtype,
+		'complimentary_result_realorgType':realorgtype,
+		'complimentary_result_assumedorgtype':assumedorgtype,
 		'complimentary_result_address':address,
 		'complimentary_result_website':website,
 		'complimentary_result_phone':phone,
@@ -151,7 +156,7 @@ def scrape(url, index, dict_array):
 		'tenth_result_description': tenth_result_description,
 		'tenth_result_url': tenth_result_url
 		}
-	print(f"{index} | {data['complimentary_result_name']} | {data['complimentary_result_website']} | {data['complimentary_result_phone']} | {data['first_result_url']}")
+	print(f"{index} | {data['complimentary_result_name']} | {data['complimentary_result_website']} | {data['complimentary_result_assumedorgtype']} | {data['complimentary_result_realorgType']}")
 	dict_array.append(data)
 
 google_search_urls = dict_csv_read()
