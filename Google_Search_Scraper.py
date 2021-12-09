@@ -1,18 +1,18 @@
-import undetected_chromedriver.v2 as uc
+from selenium import webdriver as uc
 import time
 #import simpleaudio
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.by import By
 import pandas as pd
 import urllib.parse
-
+from pprint import pprint
 def notify():
 	#wave_obj = simpleaudio.WaveObject.from_wave_file("bell.wav")
 	#play_obj = wave_obj.play()
 	#play_obj.wait_done()
 	print('stuck')
 
-driver = uc.Chrome()
+driver = uc.Chrome(executable_path='./chromedriver' )
 
 def dict_csv_read():
 	return pd.read_csv('imports.csv').links.tolist()
@@ -158,7 +158,7 @@ def scrape(url, index, dict_array):
 		'tenth_result_description': tenth_result_description,
 		'tenth_result_url': tenth_result_url
 		}
-	print(f"{index} | {data['first_result_title']} | {data['complimentary_result_website']} | {data['complimentary_result_assumedorgtype']} | {data['complimentary_result_realorgType']}")
+	pprint(data)
 	dict_array.append(data)
 
 google_search_urls = dict_csv_read()
@@ -169,7 +169,7 @@ try:
 			url = 'https://www.google.com/search?q='+urllib.parse.quote(search_string)
 			scrape(url, index, dict_array)
 except Exception as e:
-	print(e)
+	pprint(e)
 finally:
 	pd.DataFrame(dict_array).to_csv('export.csv', index = False)
 driver.quit()
