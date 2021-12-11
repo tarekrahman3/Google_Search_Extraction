@@ -98,12 +98,12 @@ def search_result(driver,index):
 
 def scrape(url, index, dict_array):
 	if index%50==0:
-		pd.DataFrame(dict_array).to_csv('backup_au_school.csv', index = False)
+		pd.DataFrame(dict_array).to_csv('backup.csv', index = False)
 	driver.get(url+'&hl=en')
 	time.sleep(1)
 	if "captcha" in (driver.page_source):
 		print('captcha !!!')
-		pd.DataFrame(dict_array).to_csv('backup_au_school.csv', index = False)
+		pd.DataFrame(dict_array).to_csv('backup.csv', index = False)
 		notify()
 		epoch = time.perf_counter()
 		while True:
