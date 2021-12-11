@@ -1,18 +1,18 @@
-from selenium import webdriver as uc
+import undetected_chromedriver.v2 as uc
 import time
-#import simpleaudio
+import simpleaudio
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.by import By
 import pandas as pd
 import urllib.parse
-from pprint import pprint
+
 def notify():
-	#wave_obj = simpleaudio.WaveObject.from_wave_file("bell.wav")
-	#play_obj = wave_obj.play()
-	#play_obj.wait_done()
+	wave_obj = simpleaudio.WaveObject.from_wave_file("bell.wav")
+	play_obj = wave_obj.play()
+	play_obj.wait_done()
 	print('stuck')
 
-driver = uc.Chrome(executable_path='./chromedriver' )
+driver = uc.Chrome()
 
 def dict_csv_read():
 	return pd.read_csv('imports.csv').links.tolist()
@@ -72,7 +72,14 @@ def social_accounts(driver):
 	except:
 		return None
 
-
+def getfirst_result_sub_description(driver,index):
+	results = driver.find_elements(By.XPATH, '//div[@class]/div[@class="g"]')
+	try:
+		result_sub_description = results[index].find_element_by_xpath('.//*[@style="-webkit-line-clamp:2"]/preceding-sibling::div').text
+	except:
+		result_sub_description = None
+	return result_sub_description
+	
 def search_result(driver,index):
 	results = driver.find_elements(By.XPATH, '//div[@class]/div[@class="g"]')
 	try:
@@ -91,12 +98,12 @@ def search_result(driver,index):
 
 def scrape(url, index, dict_array):
 	if index%50==0:
-		pd.DataFrame(dict_array).to_csv('tempBackup.csv', index = False)
+		pd.DataFrame(dict_array).to_csv('backup_au_school.csv', index = False)
 	driver.get(url+'&hl=en')
 	time.sleep(1)
 	if "captcha" in (driver.page_source):
 		print('captcha !!!')
-		pd.DataFrame(dict_array).to_csv('tempBackup.csv', index = False)
+		pd.DataFrame(dict_array).to_csv('backup_au_school.csv', index = False)
 		notify()
 		epoch = time.perf_counter()
 		while True:
@@ -107,6 +114,7 @@ def scrape(url, index, dict_array):
 	
 	permanently_closed, name, realorgtype, assumedorgtype,address, phone, website = complimentary_result(driver)
 	first_result_title, first_result_description, first_result_url = search_result(driver,0)
+	first_result_sub_description = getfirst_result_sub_description(driver,0)
 	second_result_title, second_result_description, second_result_url = search_result(driver,1)
 	third_result_title, third_result_description, third_result_url = search_result(driver,2)
 	fourth_result_title, fourth_result_description, fourth_result_url = search_result(driver,3)
@@ -128,6 +136,7 @@ def scrape(url, index, dict_array):
 		'permanently_closed':permanently_closed,
 		'socials':socials,
 		'first_result_title': first_result_title,
+		'first_result_sub_description':first_result_sub_description,
 		'first_result_description': first_result_description,
 		'first_result_url': first_result_url,
 		'second_result_title': second_result_title,
@@ -158,7 +167,7 @@ def scrape(url, index, dict_array):
 		'tenth_result_description': tenth_result_description,
 		'tenth_result_url': tenth_result_url
 		}
-	pprint(data)
+	print(f"{index} | {data['first_result_title']} | {data['complimentary_result_website']} | {data['complimentary_result_assumedorgtype']} | {data['complimentary_result_realorgType']}")
 	dict_array.append(data)
 
 google_search_urls = dict_csv_read()
@@ -166,11 +175,10 @@ dict_array = []
 try:
 	for index, search_string in enumerate(google_search_urls):
 			time.sleep(1)
-			url = 'https://www.google.com/search?q='+urllib.parse.quote(search_string)
-			scrape(url, index, dict_array)
+			#url = 'https://www.google.com/search?q='+urllib.parse.quote(search_string)
+			scrape(search_string, index, dict_array)
 except Exception as e:
-	pd.DataFrame(dict_array).to_csv('error exit backup.csv', index = False)
-	pprint(e)
+	print(e)
 finally:
 	pd.DataFrame(dict_array).to_csv('export.csv', index = False)
-driver.close()
+driver.quit()
