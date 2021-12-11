@@ -182,9 +182,12 @@ google_search_urls = dict_csv_read()
 dict_array = []
 try:
 	for index, search_string in enumerate(google_search_urls):
-			time.sleep(1)
-			#url = 'https://www.google.com/search?q='+urllib.parse.quote(search_string)
-			scrape(search_string, index, dict_array)
+		if 'https://www.google.com/search?q=' in search_string:
+			url=search_string
+		else:
+			url = 'https://www.google.com/search?q='+urllib.parse.quote(search_string)
+		time.sleep(1)
+		scrape(search_string, index, dict_array)
 except Exception as e:
 	print(e)
 finally:
