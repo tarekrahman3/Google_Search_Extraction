@@ -19,11 +19,11 @@ def dict_csv_read():
 
 def complimentary_result(driver):
 	try:
-		permanently_closed = driver.find_element_by_xpath('//h2[text()="Complementary results" or text()="Complementary Results"]/following-sibling::div//span[text()="Permanently closed"]').text
+		permanently_closed = driver.find_element(By.XPATH, '//h2[text()="Complementary results" or text()="Complementary Results"]/following-sibling::div//span[text()="Permanently closed"]').text
 	except:
 		permanently_closed = None
 	try:
-		name = driver.find_element_by_xpath('//h2[text()="Complementary results" or text()="Complementary Results"]/following-sibling::div//h2/span').text
+		name = driver.find_element(By.XPATH, '//h2[text()="Complementary results" or text()="Complementary Results"]/following-sibling::div//h2/span').text
 	except:
 		name = None
 	try:
@@ -35,36 +35,36 @@ def complimentary_result(driver):
 	except:
 		assumedorgtype =  None
 	try:
-		address = driver.find_element_by_xpath('//h2[text()="Complementary results" or text()="Complementary Results"]/following-sibling::div//a[text()="Address"]/../following-sibling::span').text
+		address = driver.find_element(By.XPATH, '//h2[text()="Complementary results" or text()="Complementary Results"]/following-sibling::div//a[text()="Address"]/../following-sibling::span').text
 	except:
 		address = None
 	try:
-		website = driver.find_element_by_xpath('//h2[text()="Complementary results" or text()="Complementary Results"]/following-sibling::div//a/div[text()="Website"]/..').get_attribute('href')
+		website = driver.find_element(By.XPATH, '//h2[text()="Complementary results" or text()="Complementary Results"]/following-sibling::div//a/div[text()="Website"]/..').get_attribute('href')
 	except:
 		website = None
 	try:
-		phone =  driver.find_element_by_xpath('//h2[text()="Complementary results" or text()="Complementary Results"]/following-sibling::div//span[contains(@aria-label,"Call")]').text
+		phone =  driver.find_element(By.XPATH, '//h2[text()="Complementary results" or text()="Complementary Results"]/following-sibling::div//span[contains(@aria-label,"Call")]').text
 	except:
 		phone =  None
 	return permanently_closed, name,realorgtype,assumedorgtype, address, phone, website
 
 def social_accounts(driver):
 	try:
-		social_profiles =  driver.find_element_by_xpath('//h2[text()="Complementary results" or text()="Complementary Results"]/following-sibling::div//*[text()="Profiles"]/following::div[1]')
+		social_profiles =  driver.find_element(By.XPATH, '//h2[text()="Complementary results" or text()="Complementary Results"]/following-sibling::div//*[text()="Profiles"]/following::div[1]')
 		try:
-			facebook = social_profiles.find_element_by_xpath('.//a[contains(@href,"facebook.com/")]').get_attribute('href')
+			facebook = social_profiles.find_element(By.XPATH, './/a[contains(@href,"facebook.com/")]').get_attribute('href')
 		except:
 			facebook = None
 		try:
-			instagram = social_profiles.find_element_by_xpath('.//a[contains(@href,"instagram.com/")]').get_attribute('href')
+			instagram = social_profiles.find_element(By.XPATH, './/a[contains(@href,"instagram.com/")]').get_attribute('href')
 		except:
 			instagram = None
 		try:
-			twitter = social_profiles.find_element_by_xpath('.//a[contains(@href,"twitter.com/")]').get_attribute('href')
+			twitter = social_profiles.find_element(By.XPATH, './/a[contains(@href,"twitter.com/")]').get_attribute('href')
 		except:
 			twitter = None
 		try:
-			linkedin = social_profiles.find_element_by_xpath('.//a[contains(@href,"linkedin.com/")]').get_attribute('href')
+			linkedin = social_profiles.find_element(By.XPATH, './/a[contains(@href,"linkedin.com/")]').get_attribute('href')
 		except:
 			linkedin = None
 		socials = f"""facebook: {facebook}\ninstagram: {instagram}\ntwitter: {twitter}\nlinkedin: {linkedin}"""
@@ -72,10 +72,10 @@ def social_accounts(driver):
 	except:
 		return None
 
-def getfirst_result_sub_description(driver,index):
+def get_sub_description(driver,index):
 	results = driver.find_elements(By.XPATH, '//div[@class]/div[@class="g"]')
 	try:
-		result_sub_description = results[index].find_element_by_xpath('.//*[@style="-webkit-line-clamp:2"]/preceding-sibling::div').text
+		result_sub_description = results[index].find_element(By.XPATH, './/*[@style="-webkit-line-clamp:2"]/preceding-sibling::div').text
 	except:
 		result_sub_description = None
 	return result_sub_description
@@ -83,15 +83,15 @@ def getfirst_result_sub_description(driver,index):
 def search_result(driver,index):
 	results = driver.find_elements(By.XPATH, '//div[@class]/div[@class="g"]')
 	try:
-		result_title = results[index].find_element_by_xpath('.//h3').text
+		result_title = results[index].find_element(By.XPATH, './/h3').text
 	except:
 		result_title = None
 	try:
-		result_description = results[index].find_element_by_xpath('.//*[@style="-webkit-line-clamp:2"]').text
+		result_description = results[index].find_element(By.XPATH, './/*[@style="-webkit-line-clamp:2"]').text
 	except:
 		result_description = None
 	try:
-		result_url = results[index].find_element_by_xpath('.//a[@href and @data-ved]').get_attribute('href')
+		result_url = results[index].find_element(By.XPATH, './/a[@href and @data-ved]').get_attribute('href')
 	except:
 		result_url = None
 	return result_title, result_description, result_url
@@ -114,11 +114,15 @@ def scrape(url, index, dict_array):
 	
 	permanently_closed, name, realorgtype, assumedorgtype,address, phone, website = complimentary_result(driver)
 	first_result_title, first_result_description, first_result_url = search_result(driver,0)
-	first_result_sub_description = getfirst_result_sub_description(driver,0)
+	first_result_sub_description = get_sub_description(driver,0)
 	second_result_title, second_result_description, second_result_url = search_result(driver,1)
+	second_result_sub_description = get_sub_description(driver,1)
 	third_result_title, third_result_description, third_result_url = search_result(driver,2)
+	third_result_sub_description = get_sub_description(driver,2)
 	fourth_result_title, fourth_result_description, fourth_result_url = search_result(driver,3)
+	fourth_result_sub_description = get_sub_description(driver,3)
 	fifth_result_title, fifth_result_description, fifth_result_url = search_result(driver,4)
+	fifth_result_sub_description = get_sub_description(driver,4)
 	sixth_result_title, sixth_result_description, sixth_result_url = search_result(driver,5)
 	seventh_result_title, seventh_result_description, seventh_result_url = search_result(driver,6)
 	eighth_result_title, eighth_result_description, eighth_result_url = search_result(driver,7)
@@ -140,15 +144,19 @@ def scrape(url, index, dict_array):
 		'first_result_description': first_result_description,
 		'first_result_url': first_result_url,
 		'second_result_title': second_result_title,
+		'second_result_sub_description':second_result_sub_description,
 		'second_result_description': second_result_description,
 		'second_result_url': second_result_url,
 		'third_result_title': third_result_title,
+		'third_result_sub_description':third_result_sub_description,
 		'third_result_description': third_result_description,
 		'third_result_url': third_result_url,
 		'fourth_result_title': fourth_result_title,
+		'fourth_result_sub_description':third_result_sub_description,
 		'fourth_result_description': fourth_result_description,
 		'fourth_result_url': fourth_result_url,
 		'fifth_result_title': fifth_result_title,
+		'fifth_result_sub_description':fifth_result_sub_description,
 		'fifth_result_description': fifth_result_description,
 		'fifth_result_url': fifth_result_url,
 		'sixth_result_title': sixth_result_title,
