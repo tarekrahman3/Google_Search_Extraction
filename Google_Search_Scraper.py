@@ -73,7 +73,7 @@ def social_accounts(driver):
 		return None
 
 def get_sub_description(driver,index):
-	results = driver.find_elements(By.XPATH, '//div[@class]/div[@class="g"]')
+	results = driver.find_elements(By.XPATH, '//div[@data-async-context and div[contains(@class,"g")]]/div')
 	try:
 		result_sub_description = results[index].find_element(By.XPATH, './/*[@style="-webkit-line-clamp:2"]/preceding-sibling::div').text
 	except:
@@ -81,7 +81,7 @@ def get_sub_description(driver,index):
 	return result_sub_description
 	
 def search_result(driver,index):
-	results = driver.find_elements(By.XPATH, '//div[@class]/div[@class="g"]')
+	results = driver.find_elements(By.XPATH, '//div[@data-async-context and div[contains(@class,"g")]]/div')
 	try:
 		result_title = results[index].find_element(By.XPATH, './/h3').text
 	except:
