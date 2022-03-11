@@ -191,5 +191,5 @@ try:
 except Exception as e:
 	print(e)
 finally:
-	pd.DataFrame(dict_array).to_csv('export.csv', index = False)
+	pd.DataFrame(dict_array).to_csv('export.csv', index=False)
 driver.quit()
