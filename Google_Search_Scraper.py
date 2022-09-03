@@ -1,4 +1,6 @@
-import undetected_chromedriver.v2 as uc
+from selenium import webdriver
+from selenium.webdriver.chrome.service import Service
+from webdriver_manager.chrome import ChromeDriverManager
 import time
 import simpleaudio
 from selenium.webdriver.common.keys import Keys
@@ -12,7 +14,7 @@ def notify():
 	play_obj.wait_done()
 	print('stuck')
 
-driver = uc.Chrome()
+driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()))
 
 def dict_csv_read():
 	return pd.read_csv('imports.csv').links.tolist()
@@ -41,7 +43,10 @@ def complimentary_result(driver):
 	try:
 		website = driver.find_element(By.XPATH, '//h2[text()="Complementary results" or text()="Complementary Results"]/following-sibling::div//a/div[text()="Website"]/..').get_attribute('href')
 	except:
-		website = None
+		try:
+			website = driver.find_element(By.XPATH, '//div[h2[text() = "Complementary results"]]//a[not(@jsname) and span]').get_attribute('href')
+		except:
+			website = None
 	try:
 		phone =  driver.find_element(By.XPATH, '//h2[text()="Complementary results" or text()="Complementary Results"]/following-sibling::div//span[contains(@aria-label,"Call")]').text
 	except:
@@ -81,7 +86,7 @@ def get_sub_description(driver,index):
 	return result_sub_description
 	
 def search_result(driver,index):
-	results = driver.find_elements(By.XPATH, '//div[@data-async-context and div[contains(@class,"g")]]/div')
+	results = driver.find_elements(By.XPATH, '//h1[text()="Search Results"]/following::div[1]//div[starts-with(@class,"g")]')
 	try:
 		result_title = results[index].find_element(By.XPATH, './/h3').text
 	except:
@@ -99,6 +104,7 @@ def search_result(driver,index):
 def scrape(url, index, dict_array):
 	if index%50==0:
 		pd.DataFrame(dict_array).to_csv('backup.csv', index = False)
+	print(url)
 	driver.get(url+'&hl=en')
 	time.sleep(1)
 	if "captcha" in (driver.page_source):
@@ -175,7 +181,7 @@ def scrape(url, index, dict_array):
 		'tenth_result_description': tenth_result_description,
 		'tenth_result_url': tenth_result_url
 		}
-	print(f"{index} | {data['first_result_title']} | {data['complimentary_result_website']} | {data['complimentary_result_assumedorgtype']} | {data['complimentary_result_realorgType']}")
+	print(f"{index} | {data['first_result_title']} | {data['complimentary_result_website']} | {data['complimentary_result_assumedorgtype']} | {data['socials']}")
 	dict_array.append(data)
 
 google_search_urls = dict_csv_read()
@@ -191,5 +197,5 @@ try:
 except Exception as e:
 	print(e)
 finally:
-	pd.DataFrame(dict_array).to_csv('export.csv', index=False)
+	pd.DataFrame(dict_array).to_csv('export.csv', index = False)
 driver.quit()
